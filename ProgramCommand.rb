@@ -1,42 +1,37 @@
 class ProgramCommand
 
+  def self.make_new command_data:
+    order = command_data[:order]
+    data = ProgramCommand.make_data(type: order, data: command_data[:data])
+    if ProgramCommand.valid_command?(order: order, data: data)
+       return ProgramCommand.new command: {order: order, data: data}
+    end
+  end
+
+  def execute
+    @data
+  end
+
+  protected
+
   def initialize command:
     @order = command[:order]
     @data = command[:data]
   end
 
-  def is_q?
-    @order == 'Q'
-  end
-
-  def is_h?
-    @order == 'H'
-  end
-
-  def is_c?
-    @order == 'C'
-  end
-
-  def width
-    @data[0]
-  end
-
-  def height
-    @data[1]
-  end
-
-  def valid_command?
-    valid = false
-    if @order == 'Q' or @order == 'H'
-      valid  = true
-    elsif @order == 'C'
-      unless @data.nil? or @data[0].nil? or @data[1].nil?
-        valid = (@data[0].is_a?(Numeric) and
-                @data[1].is_a?(Numeric) and
-                @data[0] > 0 and
-                @data[1] > 0)
-      end
+  def self.make_data type:, data:
+    if type == 'C'
+      x = data[0]
+      y = data[1]
+      return Canvas.make_new size: Point.make_new(x: x, y: y)
+    else
+      return type
     end
-    return valid
+  end
+
+  def self.valid_command? order:, data:
+    if order == 'C' or order == 'Q' or order == 'H' or order == 'W'
+      return !data.nil?
+    end
   end
 end
